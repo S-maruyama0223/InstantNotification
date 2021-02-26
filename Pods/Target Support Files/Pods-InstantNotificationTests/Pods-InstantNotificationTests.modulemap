@@ -1,0 +1,6 @@
+framework module Pods_InstantNotificationTests {
+  umbrella header "Pods-InstantNotificationTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
