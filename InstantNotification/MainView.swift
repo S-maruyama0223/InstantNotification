@@ -10,11 +10,16 @@ import UIKit
 
 class MainView: UIView, UITableViewDataSource, UITableViewDelegate {
 
-    private var tasks = [String]()
-    private let remindTableView = UITableView()
-    private let hourTextField = UITextField()
-    private let minuteTextField = UITextField()
-    private let taskTextField = UITextField()
+    lazy var tasks:[TaskCellRecord] = {
+        let task = TaskCellRecord(task: "aaa", time: "12:00")
+        return [task]
+    }()
+//    var tasks = [TaskCellRecord]()
+    let remindTableView = UITableView()
+    let hourTextField = UITextField()
+    let minuteTextField = UITextField()
+    let taskTextField = UITextField()
+    let registerButton = UIButton()
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -22,14 +27,19 @@ class MainView: UIView, UITableViewDataSource, UITableViewDelegate {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        remindTableView.delegate = self
+        remindTableView.dataSource = self
+        remindTableView.register(UINib(nibName: "TaskCell", bundle: nil), forCellReuseIdentifier: "taskCell")
         remindTableView.translatesAutoresizingMaskIntoConstraints = false
         hourTextField.translatesAutoresizingMaskIntoConstraints = false
         minuteTextField.translatesAutoresizingMaskIntoConstraints = false
         taskTextField.translatesAutoresizingMaskIntoConstraints = false
+        registerButton.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(remindTableView)
         self.addSubview(hourTextField)
         self.addSubview(minuteTextField)
         self.addSubview(taskTextField)
+        self.addSubview(registerButton)
 
         self.backgroundColor = UIColor(red: 0, green: 255, blue: 200, alpha: 1)
         // hourテキストフィールドのautolayout
@@ -60,6 +70,15 @@ class MainView: UIView, UITableViewDataSource, UITableViewDelegate {
         remindTableView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
         remindTableView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
         remindTableView.topAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
+
+        // registerボタンのautolayout
+        registerButton.leadingAnchor.constraint(equalTo: taskTextField.trailingAnchor, constant: 10).isActive = true
+        registerButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        registerButton.centerYAnchor.constraint(equalTo: taskTextField.centerYAnchor).isActive = true
+        registerButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        registerButton.setTitle("登録", for: .normal)
+        registerButton.setTitleColor(.black, for: .normal)
+        registerButton.backgroundColor = .white
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -67,7 +86,9 @@ class MainView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell")! as UITableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell") as? TaskCell else { return UITableViewCell()}
+        cell.taskLabel.text = tasks[indexPath.row].task
+        cell.timeLabel.text = tasks[indexPath.row].time
         return cell
     }
 
