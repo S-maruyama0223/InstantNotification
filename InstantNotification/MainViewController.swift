@@ -25,23 +25,23 @@ class ViewController: UIViewController {
     }
 
     private func registerModel() {
-        mainView.registerButton.addTarget(self, action: #selector(tapRegisterButton), for: .touchUpInside)
+//        mainView.registerButton.addTarget(self, action: #selector(tapRegisterButton), for: .touchUpInside)
     }
 
     @objc func tapRegisterButton() {
-        taskModel?.createRecord(hour: mainView.hourTextField.text ?? "00",
-                                minute: mainView.minuteTextField.text ?? "00",
-                                task: mainView.taskTextField.text ?? ""
-        )
+//        taskModel?.createRecord(hour: mainView.hourTextField.text ?? "00",
+//                                minute: mainView.minuteTextField.text ?? "00",
+//                                task: mainView.taskTextField.text ?? ""
+//        )
     }
 
 }
 
 extension ViewController: TaskModelDelegate {
     func registerTask(record: TaskCellRecord) {
-        mainView.tasks.append(record)
-        print(mainView.tasks.count)
-        mainView.remindTableView.reloadData()
+//        mainView.tasks.append(record)
+//        print(mainView.tasks.count)
+//        mainView.remindTableView.reloadData()
     }
 
 }

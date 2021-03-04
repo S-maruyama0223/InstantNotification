@@ -10,10 +10,11 @@
 		38E1FAAC18A7360E91BD61B1 /* Pods_InstantNotificationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0F036F01F989E8CA527F971 /* Pods_InstantNotificationTests.framework */; };
 		3975417F0EDDF1DE814ACE04 /* Pods_InstantNotification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007D163D0D4DE929F1993E6B /* Pods_InstantNotification.framework */; };
 		A7ADB7C4B0A4F364813C10C1 /* Pods_InstantNotification_InstantNotificationUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA6FB109BD7060F361B8F93 /* Pods_InstantNotification_InstantNotificationUITests.framework */; };
-		E4B9266425E693F600E69551 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B9266325E693F600E69551 /* MainView.swift */; };
 		E4B9268325E9ECA300E69551 /* TaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B9268125E9ECA300E69551 /* TaskCell.swift */; };
 		E4B9268425E9ECA300E69551 /* TaskCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E4B9268225E9ECA300E69551 /* TaskCell.xib */; };
 		E4B9268925EA26E100E69551 /* RemindTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B9268825EA26E100E69551 /* RemindTableViewModel.swift */; };
+		E4B926B525EE70FE00E69551 /* MainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E4B926B425EE70FE00E69551 /* MainView.xib */; };
+		E4B926BA25EE774F00E69551 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B926B925EE774F00E69551 /* MainView.swift */; };
 		E4C0AC9425D1691400F29885 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C0AC9325D1691400F29885 /* AppDelegate.swift */; };
 		E4C0AC9625D1691400F29885 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C0AC9525D1691400F29885 /* SceneDelegate.swift */; };
 		E4C0AC9825D1691400F29885 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C0AC9725D1691400F29885 /* MainViewController.swift */; };
@@ -51,10 +52,11 @@
 		A0F036F01F989E8CA527F971 /* Pods_InstantNotificationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_InstantNotificationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4FBB91B57D8CCEBCCFCA80B /* Pods-InstantNotificationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InstantNotificationTests.release.xcconfig"; path = "Target Support Files/Pods-InstantNotificationTests/Pods-InstantNotificationTests.release.xcconfig"; sourceTree = "<group>"; };
 		D2B3CA40C789875A6C234EC2 /* Pods-InstantNotification-InstantNotificationUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InstantNotification-InstantNotificationUITests.release.xcconfig"; path = "Target Support Files/Pods-InstantNotification-InstantNotificationUITests/Pods-InstantNotification-InstantNotificationUITests.release.xcconfig"; sourceTree = "<group>"; };
-		E4B9266325E693F600E69551 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		E4B9268125E9ECA300E69551 /* TaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCell.swift; sourceTree = "<group>"; };
 		E4B9268225E9ECA300E69551 /* TaskCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TaskCell.xib; sourceTree = "<group>"; };
 		E4B9268825EA26E100E69551 /* RemindTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindTableViewModel.swift; sourceTree = "<group>"; };
+		E4B926B425EE70FE00E69551 /* MainView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainView.xib; sourceTree = "<group>"; };
+		E4B926B925EE774F00E69551 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		E4C0AC9025D1691400F29885 /* InstantNotification.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InstantNotification.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4C0AC9325D1691400F29885 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E4C0AC9525D1691400F29885 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -135,9 +137,10 @@
 			children = (
 				E4C0AC9E25D1691500F29885 /* LaunchScreen.storyboard */,
 				E4C0AC9925D1691400F29885 /* Main.storyboard */,
-				E4B9266325E693F600E69551 /* MainView.swift */,
 				E4B9268125E9ECA300E69551 /* TaskCell.swift */,
 				E4B9268225E9ECA300E69551 /* TaskCell.xib */,
+				E4B926B425EE70FE00E69551 /* MainView.xib */,
+				E4B926B925EE774F00E69551 /* MainView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -315,6 +318,7 @@
 				E4C0ACA025D1691500F29885 /* LaunchScreen.storyboard in Resources */,
 				E4C0AC9D25D1691500F29885 /* Assets.xcassets in Resources */,
 				E4C0AC9B25D1691400F29885 /* Main.storyboard in Resources */,
+				E4B926B525EE70FE00E69551 /* MainView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,7 +430,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4C0AC9825D1691400F29885 /* MainViewController.swift in Sources */,
-				E4B9266425E693F600E69551 /* MainView.swift in Sources */,
+				E4B926BA25EE774F00E69551 /* MainView.swift in Sources */,
 				E4C0AC9425D1691400F29885 /* AppDelegate.swift in Sources */,
 				E4C0AC9625D1691400F29885 /* SceneDelegate.swift in Sources */,
 				E4B9268925EA26E100E69551 /* RemindTableViewModel.swift in Sources */,
