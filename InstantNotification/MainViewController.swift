@@ -25,10 +25,11 @@ class ViewController: UIViewController {
     }
 
     private func registerModel() {
-        mainView.doneButton.addTarget(self, action: #selector(tapRegisterButton), for: .touchUpInside)
+        mainView.doneButton.addTarget(self, action: #selector(tapDoneButton), for: .touchUpInside)
     }
 
-    @objc func tapRegisterButton() {
+    /// Doneボタンが押された時にモデルにテキストフィールドの値を渡しレコードを作成する
+    @objc private func tapDoneButton() {
         taskModel?.createRecord(hour: mainView.hourTextField.text ?? "00",
                                 minute: mainView.minuteTextField.text ?? "00",
                                 task: mainView.taskTextField.text ?? ""
@@ -38,9 +39,11 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: TaskModelDelegate {
+
+    /// タスクを登録してビューをに反映する
+    /// - Parameter record: TaskCellRecord タスク情報
     func registerTask(record: TaskCellRecord) {
         mainView.tasks.append(record)
-        print(mainView.tasks.count)
         mainView.remindTableView.reloadData()
     }
 

@@ -45,10 +45,21 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // セルが取得できなければ何もしない
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell") as? TaskCell else { return UITableViewCell()}
-        cell.taskLabel.text = tasks[indexPath.row].task
-        cell.timeLabel.text = tasks[indexPath.row].time
+        cell.setCell(record: tasks[indexPath.row])
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            tasks.remove(at: indexPath.row)
+            remindTableView.deleteRows(at: [indexPath], with: .automatic)
+        }
     }
 
 }

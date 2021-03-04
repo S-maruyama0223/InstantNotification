@@ -22,7 +22,6 @@ class TaskModel {
 }
 
 struct TaskCellRecord {
-
     let task: String
     let time: String
 }
