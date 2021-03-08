@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 class ViewController: UIViewController {
 
@@ -22,6 +23,7 @@ class ViewController: UIViewController {
         self.view = mainView
         taskModel = TaskModel()
         taskModel?.delegate = self
+
     }
 
     private func registerModel() {
@@ -30,7 +32,7 @@ class ViewController: UIViewController {
 
     /// Doneボタンが押された時にモデルにテキストフィールドの値を渡しレコードを作成する
     @objc private func tapDoneButton() {
-        taskModel?.createRecord(hour: mainView.hourTextField.text ?? "00",
+        taskModel?.registerTask(hour: mainView.hourTextField.text ?? "00",
                                 minute: mainView.minuteTextField.text ?? "00",
                                 task: mainView.taskTextField.text ?? ""
         )
@@ -46,5 +48,4 @@ extension ViewController: TaskModelDelegate {
         mainView.tasks.append(record)
         mainView.remindTableView.reloadData()
     }
-
 }

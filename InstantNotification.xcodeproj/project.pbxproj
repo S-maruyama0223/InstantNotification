@@ -214,8 +214,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E4C0ACBA25D1691500F29885 /* Build configuration list for PBXNativeTarget "InstantNotification" */;
 			buildPhases = (
-				E4B9267225E7DC4500E69551 /* ShellScript */,
 				D5394B587E5E4F4C6F9F46D1 /* [CP] Check Pods Manifest.lock */,
+				E4B9267225E7DC4500E69551 /* ShellScript */,
 				E4C0AC8C25D1691400F29885 /* Sources */,
 				E4C0AC8D25D1691400F29885 /* Frameworks */,
 				E4C0AC8E25D1691400F29885 /* Resources */,

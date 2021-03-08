@@ -26,6 +26,6 @@ class TaskCell: UITableViewCell {
 
     func setCell(record: TaskCellRecord) {
         self.taskLabel.text = record.task
-        self.timeLabel.text = record.time
+        self.timeLabel.text = "\(record.hour):\(record.minute)"
     }
 }

@@ -19,16 +19,20 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        loadNib()
-        remindTableView.delegate = self
-        remindTableView.dataSource = self
+        mainViewInit()
     }
 
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)!
+        mainViewInit()
+    }
+
+    private func mainViewInit() {
         loadNib()
         remindTableView.delegate = self
         remindTableView.dataSource = self
+        hourTextField.keyboardType = .numberPad
+        minuteTextField.keyboardType = .numberPad
     }
 
     private func loadNib() {
@@ -61,5 +65,4 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
             remindTableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
-
 }

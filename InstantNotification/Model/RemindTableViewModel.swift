@@ -7,21 +7,47 @@
 //
 
 import Foundation
+import NotificationCenter
 
 protocol TaskModelDelegate: AnyObject {
     func registerTask(record: TaskCellRecord)
 }
 
 class TaskModel {
-    var tasks = [TaskCellRecord]()
     weak var delegate: TaskModelDelegate?
+    var task: TaskCellRecord?
 
-    func createRecord(hour: String, minute: String, task: String) {
-        delegate?.registerTask(record: TaskCellRecord(task: task, time: "\(hour):\(minute)"))
+    func registerTask(hour: String, minute: String, task: String) {
+        createRecord(hour: hour, minute: minute, task: task)
+        guard let record = self.task else { return }
+        createNotification(record: record)
+        delegate?.registerTask(record: record)
+    }
+
+    private func createRecord(hour: String, minute: String, task: String) {
+        // TODO:- バリデーション
+        func validateTime(hour: String, minute: String) {
+
+        }
+        self.task = TaskCellRecord(task: task, hour: hour, minute: minute)
+    }
+
+    private func createNotification(record: TaskCellRecord) {
+        var dc = DateComponents()
+        dc.hour = Int(record.hour)
+        dc.minute = Int(record.minute)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dc, repeats: false)
+        let content = UNMutableNotificationContent()
+        content.title = "時間です!"
+        content.body = record.task
+        content.sound = .default
+        let request = UNNotificationRequest(identifier: "test", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
 }
 
 struct TaskCellRecord {
     let task: String
-    let time: String
+    let hour: String
+    let minute: String
 }
