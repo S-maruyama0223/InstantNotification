@@ -6,6 +6,21 @@
 //  
 //
 
+/*
+* やることリスト
+* カスタムアラート音
+* バリデーション
+* キーボードツールバー
+* テキストフィールド入力値制御
+* 過去履歴作成
+* タスク取り消し機能
+* タスク保存
+* 完了タスク自動削除
+* タスク通知後完了化
+*
+*
+*/
+
 import UIKit
 import UserNotifications
 
@@ -23,7 +38,6 @@ class ViewController: UIViewController {
         self.view = mainView
         taskModel = TaskModel()
         taskModel?.delegate = self
-
     }
 
     private func registerModel() {
@@ -47,5 +61,11 @@ extension ViewController: TaskModelDelegate {
     func registerTask(record: TaskCellRecord) {
         mainView.tasks.append(record)
         mainView.remindTableView.reloadData()
+    }
+}
+
+extension ViewController: MainViewDelegate {
+    func noticeDeletedTask(task: TaskCellRecord) {
+        taskModel?.deleteNotification(task: task)
     }
 }

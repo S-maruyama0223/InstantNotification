@@ -8,9 +8,14 @@
 
 import UIKit
 
+protocol MainViewDelegate: AnyObject {
+    func noticeDeletedTask(task: TaskCellRecord)
+}
+
 class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     var tasks = [TaskCellRecord]()
+    weak var mainViewDelegate:MainViewDelegate?
     @IBOutlet weak var taskTextField: UITextField!
     @IBOutlet weak var hourTextField: UITextField!
     @IBOutlet weak var minuteTextField: UITextField!
@@ -31,8 +36,8 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
         loadNib()
         remindTableView.delegate = self
         remindTableView.dataSource = self
-        hourTextField.keyboardType = .numberPad
-        minuteTextField.keyboardType = .numberPad
+        hourTextField.keyboardType = .numberPad // 時間を入れるテキストフィールドへのキーボード指定
+        minuteTextField.keyboardType = .numberPad // 時間を入れるテキストフィールドへのキーボード指定
     }
 
     private func loadNib() {
@@ -61,8 +66,9 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            tasks.remove(at: indexPath.row)
+            let removedTask = tasks.remove(at: indexPath.row)
             remindTableView.deleteRows(at: [indexPath], with: .automatic)
+            mainViewDelegate?.noticeDeletedTask(task: removedTask)
         }
     }
 }

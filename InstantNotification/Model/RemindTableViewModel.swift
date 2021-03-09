@@ -24,12 +24,21 @@ class TaskModel {
         delegate?.registerTask(record: record)
     }
 
+    func deleteNotification(task: TaskCellRecord) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(
+            withIdentifiers: [createNotificationIdentifier(task: task)]
+        )
+    }
+
     private func createRecord(hour: String, minute: String, task: String) {
         // TODO:- バリデーション
         func validateTime(hour: String, minute: String) {
-
         }
         self.task = TaskCellRecord(task: task, hour: hour, minute: minute)
+    }
+
+    private func createNotificationIdentifier(task: TaskCellRecord) -> String {
+        return task.hour + task.minute + task.task
     }
 
     private func createNotification(record: TaskCellRecord) {
@@ -41,7 +50,7 @@ class TaskModel {
         content.title = "時間です!"
         content.body = record.task
         content.sound = .default
-        let request = UNNotificationRequest(identifier: "test", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: createNotificationIdentifier(task: record), content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
 }
