@@ -15,7 +15,7 @@ protocol MainViewDelegate: AnyObject {
 class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     var tasks = [TaskCellRecord]()
-    weak var mainViewDelegate:MainViewDelegate?
+    weak var delegate: MainViewDelegate?
     @IBOutlet weak var taskTextField: UITextField!
     @IBOutlet weak var hourTextField: UITextField!
     @IBOutlet weak var minuteTextField: UITextField!
@@ -50,7 +50,7 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return tasks.count
+        return tasks.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -66,9 +66,10 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
+            print(indexPath.row)
             let removedTask = tasks.remove(at: indexPath.row)
             remindTableView.deleteRows(at: [indexPath], with: .automatic)
-            mainViewDelegate?.noticeDeletedTask(task: removedTask)
+            delegate?.noticeDeletedTask(task: removedTask)
         }
     }
 }

@@ -15,7 +15,16 @@ protocol TaskModelDelegate: AnyObject {
 
 class TaskModel {
     weak var delegate: TaskModelDelegate?
-    var task: TaskCellRecord?
+    private var task: TaskCellRecord?
+    private var tasks = [TaskCellRecord]()
+
+    init() {
+        NotificationCenter.default.addObserver(self, selector: #selector(saveTasks), name: UIApplication.willTerminateNotification, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
     func registerTask(hour: String, minute: String, task: String) {
         createRecord(hour: hour, minute: minute, task: task)
@@ -25,16 +34,41 @@ class TaskModel {
     }
 
     func deleteNotification(task: TaskCellRecord) {
+        // TODO: idが見つからなければ何もしない
         UNUserNotificationCenter.current().removePendingNotificationRequests(
             withIdentifiers: [createNotificationIdentifier(task: task)]
         )
     }
 
+    func loadSavedTasks() -> [TaskCellRecord] {
+        do {
+            guard let encodedTasks = UserDefaults.standard.data(forKey: "tasks") else {return [TaskCellRecord]() }
+            let loadedTasks = try JSONDecoder().decode([TaskCellRecord].self, from: encodedTasks)
+            return loadedTasks
+        } catch {
+            // TODO: 空配列を返しエラ〜メッセージを表示
+            return [TaskCellRecord]()
+        }
+    }
+
+    @objc private func saveTasks() {
+        do {
+            print("saved")
+            let encodedTasks = try JSONEncoder().encode(tasks)
+            UserDefaults.standard.set(encodedTasks, forKey: "tasks")
+        } catch {
+            // TODO: エラー処理 フラグをudに保存して次回起動時にユーザーに知らせる
+            print("error")
+        }
+    }
+
     private func createRecord(hour: String, minute: String, task: String) {
-        // TODO:- バリデーション
+        // TODO: バリデーション
         func validateTime(hour: String, minute: String) {
         }
-        self.task = TaskCellRecord(task: task, hour: hour, minute: minute)
+        let createdTask = TaskCellRecord(task: task, hour: hour, minute: minute)
+        self.task = createdTask
+        self.tasks.append(createdTask)
     }
 
     private func createNotificationIdentifier(task: TaskCellRecord) -> String {
@@ -55,7 +89,8 @@ class TaskModel {
     }
 }
 
-struct TaskCellRecord {
+// TODO: NDCodingプロトコルに準拠してUserDefaultsに保存可能な構造体にする
+struct TaskCellRecord: Codable {
     let task: String
     let hour: String
     let minute: String
