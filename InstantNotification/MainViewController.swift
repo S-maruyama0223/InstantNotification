@@ -36,7 +36,6 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         taskModel = TaskModel()
-        mainView.tasks = taskModel?.loadSavedTasks() ?? [TaskCellRecord]()
         self.view = mainView
         taskModel?.delegate = self
         mainView.delegate = self
@@ -61,16 +60,18 @@ extension ViewController: TaskModelDelegate {
     /// タスクを登録してビューに反映する
     /// - Parameter record: TaskCellRecord タスク情報
     func registerTask(record: TaskCellRecord) {
-        mainView.tasks.append(record)
         mainView.remindTableView.reloadData()
     }
 }
 
 extension ViewController: MainViewDelegate {
-
     /// viewからタスクが削除された通知をmodelに仲介する
     /// - Parameter task: 削除されたタスク
-    func noticeDeletedTask(task: TaskCellRecord) {
-        taskModel?.deleteNotification(task: task)
+    func deleteRemindTableViewDataSource(at dataSourceIndex: Int) {
+        taskModel?.deleteNotification(tasksIndex: dataSourceIndex)
+    }
+
+    func getRemindTableViewDataSource() -> [TaskCellRecord] {
+        return taskModel?.tasks ?? [TaskCellRecord]()
     }
 }

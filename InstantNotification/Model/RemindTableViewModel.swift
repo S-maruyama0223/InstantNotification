@@ -16,7 +16,7 @@ protocol TaskModelDelegate: AnyObject {
 class TaskModel {
     weak var delegate: TaskModelDelegate?
     private var task: TaskCellRecord?
-    private var tasks = [TaskCellRecord]()
+    var tasks = [TaskCellRecord]()
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(saveTasks), name: UIApplication.willTerminateNotification, object: nil)
@@ -33,17 +33,18 @@ class TaskModel {
         delegate?.registerTask(record: record)
     }
 
-    func deleteNotification(task: TaskCellRecord) {
-        // TODO: idが見つからなければ何もしない
+    func deleteNotification(tasksIndex: Int) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(
-            withIdentifiers: [createNotificationIdentifier(task: task)]
+            withIdentifiers: [createNotificationIdentifier(task: tasks[tasksIndex])]
         )
+        tasks.remove(at: tasksIndex)
     }
 
     func loadSavedTasks() -> [TaskCellRecord] {
         do {
             guard let encodedTasks = UserDefaults.standard.data(forKey: "tasks") else {return [TaskCellRecord]() }
             let loadedTasks = try JSONDecoder().decode([TaskCellRecord].self, from: encodedTasks)
+            self.tasks.append(contentsOf: loadedTasks)
             return loadedTasks
         } catch {
             // TODO: 空配列を返しエラ〜メッセージを表示
@@ -55,6 +56,7 @@ class TaskModel {
         do {
             print("saved")
             let encodedTasks = try JSONEncoder().encode(tasks)
+            print(tasks)
             UserDefaults.standard.set(encodedTasks, forKey: "tasks")
         } catch {
             // TODO: エラー処理 フラグをudに保存して次回起動時にユーザーに知らせる

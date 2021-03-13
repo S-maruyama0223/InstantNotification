@@ -9,13 +9,19 @@
 import UIKit
 
 protocol MainViewDelegate: AnyObject {
-    func noticeDeletedTask(task: TaskCellRecord)
+    func getRemindTableViewDataSource() -> [TaskCellRecord]
+    func deleteRemindTableViewDataSource(at dataSourceIndex: Int)
 }
 
 class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
-    var tasks = [TaskCellRecord]()
     weak var delegate: MainViewDelegate?
+    private var remindTableViewDataSource: [TaskCellRecord] {
+        if let ds = delegate?.getRemindTableViewDataSource() {
+            return ds
+        }
+        return [TaskCellRecord]()
+    }
     @IBOutlet weak var taskTextField: UITextField!
     @IBOutlet weak var hourTextField: UITextField!
     @IBOutlet weak var minuteTextField: UITextField!
@@ -50,13 +56,14 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let tasks = remindTableViewDataSource
         return tasks.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // セルが取得できなければ何もしない
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell") as? TaskCell else { return UITableViewCell()}
-        cell.setCell(record: tasks[indexPath.row])
+        cell.setCell(record: remindTableViewDataSource[indexPath.row])
         return cell
     }
 
@@ -66,10 +73,8 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            print(indexPath.row)
-            let removedTask = tasks.remove(at: indexPath.row)
+            delegate?.deleteRemindTableViewDataSource(at: indexPath.row)
             remindTableView.deleteRows(at: [indexPath], with: .automatic)
-            delegate?.noticeDeletedTask(task: removedTask)
         }
     }
 }
