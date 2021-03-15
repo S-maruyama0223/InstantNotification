@@ -27,6 +27,7 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var minuteTextField: UITextField!
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var remindTableView: UITableView!
+    @IBOutlet weak var dateControl: UISegmentedControl!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -61,7 +62,7 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // セルが取得できなければ何もしない
+        // identifierからセルが取得できなければ空のセルを返す
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell") as? TaskCell else { return UITableViewCell()}
         cell.setCell(record: remindTableViewDataSource[indexPath.row])
         return cell
@@ -77,4 +78,8 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
             remindTableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
+}
+
+extension MainView {
+    
 }

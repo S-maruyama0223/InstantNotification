@@ -47,7 +47,7 @@ class TaskModel {
             self.tasks.append(contentsOf: loadedTasks)
             return loadedTasks
         } catch {
-            // TODO: 空配列を返しエラ〜メッセージを表示
+            // TODO: 空配列を返しエラーメッセージを表示
             return [TaskCellRecord]()
         }
     }
@@ -91,9 +91,9 @@ class TaskModel {
     }
 }
 
-// TODO: NDCodingプロトコルに準拠してUserDefaultsに保存可能な構造体にする
 struct TaskCellRecord: Codable {
     let task: String
+    let date: String
     let hour: String
     let minute: String
 }
