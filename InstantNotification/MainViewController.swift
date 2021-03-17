@@ -48,7 +48,8 @@ class ViewController: UIViewController {
 
     /// Doneボタンが押された時にモデルにテキストフィールドの値を渡しレコードを作成する
     @objc private func tapDoneButton() {
-        taskModel?.registerTask(hour: mainView.hourTextField.text ?? "00",
+        taskModel?.registerTask(dateIndex: mainView.dateControl.selectedSegmentIndex,
+                                hour: mainView.hourTextField.text ?? "00",
                                 minute: mainView.minuteTextField.text ?? "00",
                                 task: mainView.taskTextField.text ?? ""
         )

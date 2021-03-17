@@ -81,5 +81,5 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 }
 
 extension MainView {
-    
+
 }

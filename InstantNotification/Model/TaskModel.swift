@@ -15,7 +15,15 @@ protocol TaskModelDelegate: AnyObject {
 
 class TaskModel {
     weak var delegate: TaskModelDelegate?
-    private var task: TaskCellRecord?
+    private var task: TaskCellRecord? {
+        didSet {
+            // 二回目以降の代入を不可とする
+            if let ov = oldValue {
+                task = ov
+                print("task can not assign a new value again.")
+            }
+        }
+    }
     var tasks = [TaskCellRecord]()
 
     init() {
@@ -26,8 +34,8 @@ class TaskModel {
         NotificationCenter.default.removeObserver(self)
     }
 
-    func registerTask(hour: String, minute: String, task: String) {
-        createRecord(hour: hour, minute: minute, task: task)
+    func registerTask(dateIndex: Int, hour: String, minute: String, task: String) {
+        createRecord(dateIndex: dateIndex, hour: hour, minute: minute, task: task)
         guard let record = self.task else { return }
         createNotification(record: record)
         delegate?.registerTask(record: record)
@@ -54,9 +62,7 @@ class TaskModel {
 
     @objc private func saveTasks() {
         do {
-            print("saved")
             let encodedTasks = try JSONEncoder().encode(tasks)
-            print(tasks)
             UserDefaults.standard.set(encodedTasks, forKey: "tasks")
         } catch {
             // TODO: エラー処理 フラグをudに保存して次回起動時にユーザーに知らせる
@@ -64,21 +70,44 @@ class TaskModel {
         }
     }
 
-    private func createRecord(hour: String, minute: String, task: String) {
-        // TODO: バリデーション
+//    private func createDateFromString(stringDate: String) -> Date {
+//        let df = DateFormatter()
+//        df.dateFormat = DATE_FORMAT
+//        return df.date(from: stringDate) ?? Date()
+//    }
+
+    private func createRecord(dateIndex: Int, hour: String, minute: String, task: String) {
+        /// 日付パラメータから日付を判断して指定のフォーマットで返す
+        func createStringDate(format: MMDD) -> String {
+            let df = DateFormatter()
+            df.dateFormat = format.rawValue
+            if dateIndex == 0 {
+                return df.string(for: Date())!
+            } else {
+                return df.string(for: Date(timeIntervalSinceNow: 60 * 60 * 24))!
+            }
+        }
+        // TODO: バリデーション　監視メソッド内に移すかも
         func validateTime(hour: String, minute: String) {
         }
-        let createdTask = TaskCellRecord(task: task, hour: hour, minute: minute)
+
+        let createdTask = TaskCellRecord(task: task,
+                                         month: createStringDate(format: .MM),
+                                         day: createStringDate(format: .dd),
+                                         hour: hour,
+                                         minute: minute)
         self.task = createdTask
         self.tasks.append(createdTask)
     }
 
     private func createNotificationIdentifier(task: TaskCellRecord) -> String {
-        return task.hour + task.minute + task.task
+        return task.month + task.day + task.hour + task.minute + task.task
     }
 
     private func createNotification(record: TaskCellRecord) {
         var dc = DateComponents()
+        dc.month = Int(record.month)
+        dc.day = Int(record.day)
         dc.hour = Int(record.hour)
         dc.minute = Int(record.minute)
         let trigger = UNCalendarNotificationTrigger(dateMatching: dc, repeats: false)
@@ -93,7 +122,18 @@ class TaskModel {
 
 struct TaskCellRecord: Codable {
     let task: String
-    let date: String
+    let month: String
+    let day: String
     let hour: String
     let minute: String
+}
+
+enum MMDD: String {
+    case MM
+    case dd
+}
+
+enum DayPattern: Int {
+    case today
+    case tommorow
 }
