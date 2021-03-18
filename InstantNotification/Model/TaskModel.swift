@@ -15,19 +15,21 @@ protocol TaskModelDelegate: AnyObject {
 
 class TaskModel {
     weak var delegate: TaskModelDelegate?
-    private var task: TaskCellRecord? {
-        didSet {
-            // 二回目以降の代入を不可とする
-            if let ov = oldValue {
-                task = ov
-                print("task can not assign a new value again.")
-            }
-        }
-    }
     var tasks = [TaskCellRecord]()
 
     init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(saveTasks), name: UIApplication.willTerminateNotification, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(saveTasks),
+                                               name: UIApplication.willTerminateNotification,
+                                               object: nil)
+        do {
+            if let encodedTasks = UserDefaults.standard.data(forKey: "tasks") {
+                let loadedTasks = try JSONDecoder().decode([TaskCellRecord].self, from: encodedTasks)
+                self.tasks.append(contentsOf: loadedTasks)
+            }
+        } catch {
+            // TODO: エラーメッセージをViewに表示
+        }
     }
 
     deinit {
@@ -35,8 +37,7 @@ class TaskModel {
     }
 
     func registerTask(dateIndex: Int, hour: String, minute: String, task: String) {
-        createRecord(dateIndex: dateIndex, hour: hour, minute: minute, task: task)
-        guard let record = self.task else { return }
+        let record = createRecord(dateIndex: dateIndex, hour: hour, minute: minute, task: task)
         createNotification(record: record)
         delegate?.registerTask(record: record)
     }
@@ -48,35 +49,18 @@ class TaskModel {
         tasks.remove(at: tasksIndex)
     }
 
-    func loadSavedTasks() -> [TaskCellRecord] {
-        do {
-            guard let encodedTasks = UserDefaults.standard.data(forKey: "tasks") else {return [TaskCellRecord]() }
-            let loadedTasks = try JSONDecoder().decode([TaskCellRecord].self, from: encodedTasks)
-            self.tasks.append(contentsOf: loadedTasks)
-            return loadedTasks
-        } catch {
-            // TODO: 空配列を返しエラーメッセージを表示
-            return [TaskCellRecord]()
-        }
-    }
-
     @objc private func saveTasks() {
         do {
             let encodedTasks = try JSONEncoder().encode(tasks)
             UserDefaults.standard.set(encodedTasks, forKey: "tasks")
+            print("saved\(tasks)")
         } catch {
             // TODO: エラー処理 フラグをudに保存して次回起動時にユーザーに知らせる
             print("error")
         }
     }
 
-//    private func createDateFromString(stringDate: String) -> Date {
-//        let df = DateFormatter()
-//        df.dateFormat = DATE_FORMAT
-//        return df.date(from: stringDate) ?? Date()
-//    }
-
-    private func createRecord(dateIndex: Int, hour: String, minute: String, task: String) {
+    private func createRecord(dateIndex: Int, hour: String, minute: String, task: String) -> TaskCellRecord {
         /// 日付パラメータから日付を判断して指定のフォーマットで返す
         func createStringDate(format: MMDD) -> String {
             let df = DateFormatter()
@@ -96,8 +80,8 @@ class TaskModel {
                                          day: createStringDate(format: .dd),
                                          hour: hour,
                                          minute: minute)
-        self.task = createdTask
         self.tasks.append(createdTask)
+        return createdTask
     }
 
     private func createNotificationIdentifier(task: TaskCellRecord) -> String {

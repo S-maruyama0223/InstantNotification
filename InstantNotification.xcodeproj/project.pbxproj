@@ -135,8 +135,6 @@
 		E4B9265D25E67AC700E69551 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				E4C0AC9E25D1691500F29885 /* LaunchScreen.storyboard */,
-				E4C0AC9925D1691400F29885 /* Main.storyboard */,
 				E4B9268125E9ECA300E69551 /* TaskCell.swift */,
 				E4B9268225E9ECA300E69551 /* TaskCell.xib */,
 				E4B926B425EE70FE00E69551 /* MainView.xib */,
@@ -183,6 +181,8 @@
 				E4B9265D25E67AC700E69551 /* View */,
 				E4B9265C25E67AAE00E69551 /* Controller */,
 				E4C0AC9525D1691400F29885 /* SceneDelegate.swift */,
+				E4C0AC9925D1691400F29885 /* Main.storyboard */,
+				E4C0AC9E25D1691500F29885 /* LaunchScreen.storyboard */,
 				E4C0AC9C25D1691500F29885 /* Assets.xcassets */,
 				E4C0ACA125D1691500F29885 /* Info.plist */,
 			);

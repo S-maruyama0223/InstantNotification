@@ -8,15 +8,15 @@
 
 /*
 * やることリスト
+* オートレイアウト
 * カスタムアラート音
 * バリデーション
 * キーボードツールバー
 * テキストフィールド入力値制御
-* 過去履歴作成
 * タスク取り消し機能 ok
 * タスク保存 ok
-* 完了タスク自動削除
-* タスク通知後完了化
+* 完了タスク自動削除/過去履歴作成
+* タスク通知後完了化 可能か？
 * アクティブな通知を５こまでに制限
 * タスク追加時に重複のチェック
 *
@@ -58,7 +58,6 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: TaskModelDelegate {
-
     /// タスクを登録してビューに反映する
     /// - Parameter record: TaskCellRecord タスク情報
     func registerTask(record: TaskCellRecord) {
@@ -73,6 +72,8 @@ extension ViewController: MainViewDelegate {
         taskModel?.deleteNotification(tasksIndex: dataSourceIndex)
     }
 
+    /// TableViewから要求されたデータソースを返す
+    /// - Returns: [TaskCellRecord]
     func getRemindTableViewDataSource() -> [TaskCellRecord] {
         return taskModel?.tasks ?? [TaskCellRecord]()
     }
