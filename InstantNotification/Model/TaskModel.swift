@@ -14,14 +14,12 @@ protocol TaskModelDelegate: AnyObject {
 }
 
 class TaskModel {
+    static let taskModel = TaskModel()
     weak var delegate: TaskModelDelegate?
-    var tasks = [TaskCellRecord]()
+    private(set) var tasks = [TaskCellRecord]()
 
-    init() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(saveTasks),
-                                               name: UIApplication.willTerminateNotification,
-                                               object: nil)
+    // 外部からのインスタンス化を禁止しシングルトンとする
+    private init() {
         do {
             if let encodedTasks = UserDefaults.standard.data(forKey: "tasks") {
                 let loadedTasks = try JSONDecoder().decode([TaskCellRecord].self, from: encodedTasks)
@@ -49,7 +47,7 @@ class TaskModel {
         tasks.remove(at: tasksIndex)
     }
 
-    @objc private func saveTasks() {
+    func saveTasks() {
         do {
             let encodedTasks = try JSONEncoder().encode(tasks)
             UserDefaults.standard.set(encodedTasks, forKey: "tasks")
