@@ -36,7 +36,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        taskModel = TaskModel()
+        taskModel = TaskModel.taskModel
         self.view = mainView
         taskModel?.delegate = self
         mainView.delegate = self
