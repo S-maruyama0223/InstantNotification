@@ -68,13 +68,23 @@ extension ViewController: TaskModelDelegate {
 extension ViewController: MainViewDelegate {
     /// viewからタスクが削除された通知をmodelに仲介する
     /// - Parameter task: 削除されたタスク
-    func deleteRemindTableViewDataSource(at dataSourceIndex: Int) {
-        taskModel?.deleteNotification(tasksIndex: dataSourceIndex)
+    func deleteRemindTableViewTasks(at dataSourceIndex: Int) {
+        taskModel?.deleteNotification(isFinished: false, tasksIndex: dataSourceIndex)
     }
 
-    /// TableViewから要求されたデータソースを返す
+    func deleteRemindTableViewFinishedTasks(at dataSourceIndex: Int) {
+        taskModel?.deleteNotification(isFinished: true, tasksIndex: dataSourceIndex)
+    }
+
+    /// TableViewから要求されたtasksデータソースを返す
     /// - Returns: [TaskCellRecord]
-    func getRemindTableViewDataSource() -> [TaskCellRecord] {
+    func getRemindTableViewTasks() -> [TaskCellRecord] {
         return taskModel?.tasks ?? [TaskCellRecord]()
+    }
+
+    /// TableViewから要求されたfinishedTasksデータソースを返す
+    /// - Returns: [TaskCellRecord]
+    func getRemindTableViewFinishedTasks() -> [TaskCellRecord] {
+        return taskModel?.finishedTasks ?? [TaskCellRecord]()
     }
 }

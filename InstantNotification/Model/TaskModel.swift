@@ -17,17 +17,24 @@ class TaskModel {
     static let taskModel = TaskModel()
     weak var delegate: TaskModelDelegate?
     private(set) var tasks = [TaskCellRecord]()
+    private(set) var finishedTasks = [TaskCellRecord]()
 
     // 外部からのインスタンス化を禁止しシングルトンとする
     private init() {
+        // UserDefaults内のタスクの読み込み
         do {
-            if let encodedTasks = UserDefaults.standard.data(forKey: "tasks") {
-                let loadedTasks = try JSONDecoder().decode([TaskCellRecord].self, from: encodedTasks)
-                self.tasks.append(contentsOf: loadedTasks)
+            if let loadedTasks = UserDefaults.standard.data(forKey: "tasks") {
+                   let decodedTasks = try JSONDecoder().decode([TaskCellRecord].self, from: loadedTasks)
+                   self.tasks.append(contentsOf: decodedTasks)
+            }
+            if let loadedFinishedTasks = UserDefaults.standard.data(forKey: "finishedTasks") {
+                   let decordedFinishedTasks = try JSONDecoder().decode([TaskCellRecord].self, from: loadedFinishedTasks)
+                   self.finishedTasks.append(contentsOf: decordedFinishedTasks)
             }
         } catch {
             // TODO: エラーメッセージをViewに表示
         }
+        self.checkFinishedTasks()
     }
 
     deinit {
@@ -40,24 +47,40 @@ class TaskModel {
         delegate?.registerTask(record: record)
     }
 
-    func deleteNotification(tasksIndex: Int) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(
-            withIdentifiers: [createNotificationIdentifier(task: tasks[tasksIndex])]
-        )
-        tasks.remove(at: tasksIndex)
+    func deleteNotification(isFinished: Bool, tasksIndex: Int) {
+        if isFinished {
+            finishedTasks.remove(at: tasksIndex)
+        } else {
+            UNUserNotificationCenter.current().removePendingNotificationRequests(
+                withIdentifiers: [createNotificationIdentifier(task: tasks[tasksIndex])]
+            )
+            tasks.remove(at: tasksIndex)
+        }
     }
 
     func saveTasks() {
         do {
             let encodedTasks = try JSONEncoder().encode(tasks)
+            let encodedFinishedTasks = try JSONEncoder().encode(finishedTasks)
             UserDefaults.standard.set(encodedTasks, forKey: "tasks")
-            print("saved\(tasks)")
+            UserDefaults.standard.set(encodedFinishedTasks, forKey: "finishedTasks")
         } catch {
             // TODO: エラー処理 フラグをudに保存して次回起動時にユーザーに知らせる
             print("error")
         }
     }
 
+    private func checkFinishedTasks() {
+        let df = DateFormatter()
+        df.dateFormat = "MMddHHmm"
+        let now = Int(df.string(from: Date()))!
+        for (i, _) in tasks.enumerated().reversed() {
+            let task = tasks[i]
+            if Int("\(task.month)\(task.day)\(task.hour)\(task.minute)")! <= now {
+                finishedTasks.append(tasks.remove(at: i))
+            }
+        }
+    }
     private func createRecord(dateIndex: Int, hour: String, minute: String, task: String) -> TaskCellRecord {
         /// 日付パラメータから日付を判断して指定のフォーマットで返す
         func createStringDate(format: MMDD) -> String {

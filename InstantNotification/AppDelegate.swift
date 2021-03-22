@@ -39,6 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func applicationWillTerminate(_ application: UIApplication) {
         // タスクモデルのデータを保存するメソッドをコール
+        print(#function)
         TaskModel.taskModel.saveTasks()
     }
 
