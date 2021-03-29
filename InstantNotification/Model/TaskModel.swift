@@ -47,17 +47,6 @@ class TaskModel {
         delegate?.registerTask(record: record)
     }
 
-    func deleteNotification(isFinished: Bool, tasksIndex: Int) {
-        if isFinished {
-            finishedTasks.remove(at: tasksIndex)
-        } else {
-            UNUserNotificationCenter.current().removePendingNotificationRequests(
-                withIdentifiers: [createNotificationIdentifier(task: tasks[tasksIndex])]
-            )
-            tasks.remove(at: tasksIndex)
-        }
-    }
-
     func saveTasks() {
         do {
             let encodedTasks = try JSONEncoder().encode(tasks)
@@ -81,6 +70,7 @@ class TaskModel {
             }
         }
     }
+
     private func createRecord(dateIndex: Int, hour: String, minute: String, task: String) -> TaskCellRecord {
         /// 日付パラメータから日付を判断して指定のフォーマットで返す
         func createStringDate(format: MMDD) -> String {
@@ -107,6 +97,17 @@ class TaskModel {
 
     private func createNotificationIdentifier(task: TaskCellRecord) -> String {
         return task.month + task.day + task.hour + task.minute + task.task
+    }
+
+    func deleteNotification(isFinished: Bool, tasksIndex: Int) {
+        if isFinished {
+            finishedTasks.remove(at: tasksIndex)
+        } else {
+            UNUserNotificationCenter.current().removePendingNotificationRequests(
+                withIdentifiers: [createNotificationIdentifier(task: tasks[tasksIndex])]
+            )
+            tasks.remove(at: tasksIndex)
+        }
     }
 
     private func createNotification(record: TaskCellRecord) {

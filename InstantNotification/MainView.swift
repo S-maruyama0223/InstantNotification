@@ -30,6 +30,9 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
         }
         return [TaskCellRecord]()
     }
+    private var numberOfSections: Int {
+        return tasks.count + finishedTasks.count
+    }
 
     @IBOutlet weak var taskTextField: UITextField!
     @IBOutlet weak var hourTextField: UITextField!
@@ -66,16 +69,21 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        if finishedTasks.isEmpty {
-            return 1
-        } else {
+        if tasks.count + finishedTasks.count == 0 {
+            return 0
+        } else if tasks.count >= 1 && finishedTasks.count >= 1 {
             return 2
         }
+        return 1
     }
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        print(finishedTasks)
         switch section {
         case 0:
+            if tasks.isEmpty && finishedTasks.isEmpty == false {
+                return "通知済み"
+            }
             return "未通知"
         default:
             return "通知済み"
@@ -85,6 +93,9 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
+            if tasks.isEmpty && finishedTasks.isEmpty == false {
+                return finishedTasks.count
+            }
             return tasks.count
         default:
             return finishedTasks.count
@@ -97,6 +108,10 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
         switch indexPath.section {
         case 0:
+            if tasks.isEmpty && finishedTasks.isEmpty == false {
+                cell.setCell(record: finishedTasks[indexPath.row])
+                return cell
+            }
             cell.setCell(record: tasks[indexPath.row])
         default:
             cell.setCell(record: finishedTasks[indexPath.row])
@@ -109,21 +124,26 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        print(remindTableView.numberOfSections)
         if editingStyle == .delete {
             switch indexPath.section {
             case 0:
-                delegate?.deleteRemindTableViewTasks(at: indexPath.row)
+                if tasks.isEmpty && finishedTasks.isEmpty == false {
+                    delegate?.deleteRemindTableViewFinishedTasks(at: indexPath.row)
+                } else {
+                    delegate?.deleteRemindTableViewTasks(at: indexPath.row)
+                }
             default:
                 delegate?.deleteRemindTableViewFinishedTasks(at: indexPath.row)
             }
-            if remindTableView.numberOfRows(inSection: indexPath.section) > 1 {
+
+            if remindTableView.numberOfRows(inSection: indexPath.section) == 1 {
+                // セクション内の行が一つの場合のみセクションごと削除
+                let indexSet = NSMutableIndexSet()
+                indexSet.add(indexPath.section)
+                remindTableView.deleteSections(indexSet as IndexSet, with: .fade)
+            } else {
                 remindTableView.deleteRows(at: [indexPath], with: .automatic)
-                return
             }
-            let indexSet = NSMutableIndexSet()
-            indexSet.add(indexPath.section)
-            remindTableView.deleteSections(indexSet as IndexSet, with: .fade)
         }
 
     }
