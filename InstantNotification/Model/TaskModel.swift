@@ -82,11 +82,33 @@ class TaskModel {
                 return df.string(for: Date(timeIntervalSinceNow: 60 * 60 * 24))!
             }
         }
+
+        func createDate(dateIndex: Int, hour: String, minute: String) -> Date {
+            let date: Date
+            if dateIndex == 0 {
+                date = Date()
+            } else {
+                date = Date(timeIntervalSinceNow: 60 * 60 * 24)
+            }
+            var dc = DateComponents()
+            let df = DateFormatter()
+            df.dateFormat = "YYYY"
+            dc.year = Int(df.string(from: date))
+            df.dateFormat = MMDD.MM.toString()
+            dc.month = Int(df.string(from: date))
+            df.dateFormat = MMDD.dd.toString()
+            dc.day = Int(df.string(from: date))
+            dc.hour = Int(hour)
+            dc.minute = Int(minute)
+            guard let createdDate = dc.date else { return Date() }
+            return createdDate
+        }
         // TODO: バリデーション　監視メソッド内に移すかも
         func validateTime(hour: String, minute: String) {
         }
 
         let createdTask = TaskCellRecord(task: task,
+                                         date: createDate(dateIndex: dateIndex, hour: hour, minute: minute),
                                          month: createStringDate(format: .MM),
                                          day: createStringDate(format: .dd),
                                          hour: hour,
@@ -128,6 +150,7 @@ class TaskModel {
 
 struct TaskCellRecord: Codable {
     let task: String
+    let date: Date
     let month: String
     let day: String
     let hour: String
@@ -137,9 +160,7 @@ struct TaskCellRecord: Codable {
 enum MMDD: String {
     case MM
     case dd
-}
-
-enum DayPattern: Int {
-    case today
-    case tommorow
+    func toString() -> String {
+        return self.rawValue
+    }
 }

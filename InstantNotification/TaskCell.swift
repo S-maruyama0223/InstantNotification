@@ -26,6 +26,7 @@ class TaskCell: UITableViewCell {
 
     func setCell(record: TaskCellRecord) {
         self.taskLabel.text = record.task
+        // TODO: ユーザー指定のフォーマット
         self.timeLabel.text = "\(record.month)/\(record.day) \(record.hour):\(record.minute)"
     }
 }
