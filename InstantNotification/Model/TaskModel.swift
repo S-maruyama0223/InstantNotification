@@ -41,6 +41,10 @@ class TaskModel {
         NotificationCenter.default.removeObserver(self)
     }
 
+    func validateTextField(text: String) {
+        
+    }
+
     func registerTask(dateIndex: Int, hour: String, minute: String, task: String) {
         let record = createRecord(dateIndex: dateIndex, hour: hour, minute: minute, task: task)
         createNotification(record: record)

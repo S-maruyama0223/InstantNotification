@@ -42,6 +42,8 @@ class ViewController: UIViewController {
         self.view = mainView
         taskModel?.delegate = self
         mainView.delegate = self
+        mainView.hourTextField.addTarget(self, action: #selector(hourEditingChanged), for: .editingChanged)
+        mainView.minuteTextField.addTarget(self, action: #selector(minuteEditingChanged), for: .editingChanged)
     }
 
     private func registerModel() {
@@ -57,6 +59,21 @@ class ViewController: UIViewController {
         )
     }
 
+    @objc func hourEditingChanged(sender: UITextField) {
+        if sender.text?.count == 2 {
+            taskModel?.validateTextField(text: sender.text ?? "")
+        } else if sender.text?.count ?? 0 > 2 { // 現状の言語仕様ではフォースアンラップでも安全だがcountは0をデフォルトとする
+            sender.text = sender.text?.prefix(2).description
+        }
+    }
+    @objc func minuteEditingChanged(sender: UITextField) {
+        if sender.text?.count == 2 {
+            taskModel?.validateTextField(text: sender.text ?? "")
+        } else if sender.text?.count ?? 0 > 2 { // 現状の言語仕様ではフォースアンラップでも安全だがcountは0をデフォルトとする
+            sender.text = sender.text?.prefix(2).description
+        }
+    }
+
 }
 
 extension ViewController: TaskModelDelegate {
@@ -68,8 +85,12 @@ extension ViewController: TaskModelDelegate {
 }
 
 extension ViewController: MainViewDelegate {
+    func hourFieldDidChanged(text: String) {
+        taskModel?.validateTextField(text: text)
+    }
+
     /// viewからタスクが削除された通知をmodelに仲介する
-    /// - Parameter task: 削除されたタスク
+    /// - Parameter at: 削除するセルの行数
     func deleteRemindTableViewTasks(at dataSourceIndex: Int) {
         taskModel?.deleteNotification(isFinished: false, tasksIndex: dataSourceIndex)
     }
