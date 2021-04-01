@@ -42,8 +42,8 @@ class ViewController: UIViewController {
         self.view = mainView
         taskModel?.delegate = self
         mainView.delegate = self
-        mainView.hourTextField.addTarget(self, action: #selector(hourEditingChanged), for: .editingChanged)
-        mainView.minuteTextField.addTarget(self, action: #selector(minuteEditingChanged), for: .editingChanged)
+        mainView.hourTextField.addTarget(self, action: #selector(timeFieldEditingChanged), for: .editingChanged)
+        mainView.minuteTextField.addTarget(self, action: #selector(timeFieldEditingChanged), for: .editingChanged)
     }
 
     private func registerModel() {
@@ -59,21 +59,15 @@ class ViewController: UIViewController {
         )
     }
 
-    @objc func hourEditingChanged(sender: UITextField) {
-        if sender.text?.count == 2 {
-            taskModel?.validateTextField(text: sender.text ?? "")
-        } else if sender.text?.count ?? 0 > 2 { // 現状の言語仕様ではフォースアンラップでも安全だがcountは0をデフォルトとする
+    @objc private func timeFieldEditingChanged(sender: UITextField) {
+        //TODO: 両方空の時にデフォルト時間を挿入
+        taskModel?.validateTextField(hour: mainView.hourTextField.text ?? "",
+                                     minute: mainView.minuteTextField.text ?? ""
+        )
+        if sender.text?.count ?? 0 > 2 { // 現状の言語仕様ではフォースアンラップでも安全だがcountは0をデフォルトとする
             sender.text = sender.text?.prefix(2).description
         }
     }
-    @objc func minuteEditingChanged(sender: UITextField) {
-        if sender.text?.count == 2 {
-            taskModel?.validateTextField(text: sender.text ?? "")
-        } else if sender.text?.count ?? 0 > 2 { // 現状の言語仕様ではフォースアンラップでも安全だがcountは0をデフォルトとする
-            sender.text = sender.text?.prefix(2).description
-        }
-    }
-
 }
 
 extension ViewController: TaskModelDelegate {
@@ -82,13 +76,16 @@ extension ViewController: TaskModelDelegate {
     func registerTask(record: TaskCellRecord) {
         mainView.remindTableView.reloadData()
     }
+
+    func failureTimeValidation() {
+        mainView.doneButton.isEnabled = false
+    }
+    func successTimeValidation() {
+        mainView.doneButton.isEnabled = true
+    }
 }
 
 extension ViewController: MainViewDelegate {
-    func hourFieldDidChanged(text: String) {
-        taskModel?.validateTextField(text: text)
-    }
-
     /// viewからタスクが削除された通知をmodelに仲介する
     /// - Parameter at: 削除するセルの行数
     func deleteRemindTableViewTasks(at dataSourceIndex: Int) {

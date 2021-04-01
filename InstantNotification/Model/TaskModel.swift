@@ -11,6 +11,8 @@ import NotificationCenter
 
 protocol TaskModelDelegate: AnyObject {
     func registerTask(record: TaskCellRecord)
+    func failureTimeValidation()
+    func successTimeValidation()
 }
 
 class TaskModel {
@@ -41,8 +43,27 @@ class TaskModel {
         NotificationCenter.default.removeObserver(self)
     }
 
-    func validateTextField(text: String) {
-        
+    func validateTextField(hour: String, minute: String) {
+
+        guard let hourNum = Int(hour), let minuteNum = Int(minute) else {
+            // 数値を入力してください。
+            delegate?.failureTimeValidation()
+            return
+        }
+
+        if hourNum > 23 ||
+            minuteNum > 59 {
+            // 不正な時間です。
+            delegate?.failureTimeValidation()
+            return
+        }
+
+        if hour.count < 2 || minute.count < 2 {
+            delegate?.failureTimeValidation()
+            return
+        }
+
+        delegate?.successTimeValidation()
     }
 
     func registerTask(dateIndex: Int, hour: String, minute: String, task: String) {
@@ -106,9 +127,6 @@ class TaskModel {
             dc.minute = Int(minute)
             guard let createdDate = dc.date else { return Date() }
             return createdDate
-        }
-        // TODO: バリデーション　監視メソッド内に移すかも
-        func validateTime(hour: String, minute: String) {
         }
 
         let createdTask = TaskCellRecord(task: task,
