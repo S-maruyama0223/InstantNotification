@@ -17,29 +17,28 @@ protocol MainViewDelegate: AnyObject {
 
 class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
 
-    weak var delegate: MainViewDelegate?
-    private var tasks: [TaskCellRecord] {
-        if let ds = delegate?.getRemindTableViewTasks() {
-            return ds
-        }
-        return [TaskCellRecord]()
-    }
-    private var finishedTasks: [TaskCellRecord] {
-        if let ds = delegate?.getRemindTableViewFinishedTasks() {
-            return ds
-        }
-        return [TaskCellRecord]()
-    }
-    private var numberOfSections: Int {
-        return tasks.count + finishedTasks.count
-    }
-
     @IBOutlet weak var taskTextField: UITextField!
     @IBOutlet weak var hourTextField: UITextField!
     @IBOutlet weak var minuteTextField: UITextField!
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var remindTableView: UITableView!
     @IBOutlet weak var dateControl: UISegmentedControl!
+
+    weak var delegate: MainViewDelegate?
+    private var tasks: [TaskCellRecord] {
+        if let ds = delegate?.getRemindTableViewTasks() {
+            return ds
+        }
+        // 外部からデータを取得できなければ空配列を返す
+        return [TaskCellRecord]()
+    }
+    private var finishedTasks: [TaskCellRecord] {
+        if let ds = delegate?.getRemindTableViewFinishedTasks() {
+            return ds
+        }
+        // 外部からデータを取得できなければ空配列を返す
+        return [TaskCellRecord]()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -69,11 +68,14 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        if tasks.count + finishedTasks.count == 0 {
+        if tasks.isEmpty && finishedTasks.isEmpty == false {
+            // 完了済みタスク、未完了タスク共に無ければセクションを作らない
             return 0
         } else if tasks.count >= 1 && finishedTasks.count >= 1 {
+            // どちらも１以上存在すればセクションを2つ生成
             return 2
         }
+        // どちらか片方だけであればセクションを1つ生成
         return 1
     }
 
@@ -82,10 +84,13 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
         switch section {
         case 0:
             if tasks.isEmpty && finishedTasks.isEmpty == false {
+                // 通知済みタスクのみ存在すれば"通知済み"を表示
                 return "通知済み"
             }
+            // 未完了タスクのみ存在存在すれば"未通知"を表示
             return "未通知"
         default:
+            // セクションインデックスが1の場合は"通知済み"を表示
             return "通知済み"
         }
     }
@@ -94,10 +99,13 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
         switch section {
         case 0:
             if tasks.isEmpty && finishedTasks.isEmpty == false {
+                // 通知済みタスクのみ存在すれば通知済みタスクの要素数を返却
                 return finishedTasks.count
             }
+            // 未完了タスクのみ存在すれば未完了タスクの要素数を返却
             return tasks.count
         default:
+            // セクションインデックスが1の場合は通知済みタスクの要素数を返却
             return finishedTasks.count
         }
     }
@@ -109,30 +117,38 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
         switch indexPath.section {
         case 0:
             if tasks.isEmpty && finishedTasks.isEmpty == false {
+                // 通知済みタスクのみ存在すれば通知済みタスクの情報をセルに反映
                 cell.setCell(record: finishedTasks[indexPath.row])
                 return cell
             }
+            // 未完了タスクのみ存在すれば未完了タスクの情報をセルに反映
             cell.setCell(record: tasks[indexPath.row])
         default:
+            // セクションインデックスが1の場合は通知済みタスクの情報をセルに反映
             cell.setCell(record: finishedTasks[indexPath.row])
         }
         return cell
     }
 
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        // すべての行が編集可能
         return true
     }
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+
         if editingStyle == .delete {
             switch indexPath.section {
             case 0:
                 if tasks.isEmpty && finishedTasks.isEmpty == false {
+                    // 通知済みタスクのみ存在すれば通知済みタスクの情報を削除
                     delegate?.deleteRemindTableViewFinishedTasks(at: indexPath.row)
                 } else {
+                    // 未完了タスクのみ存在すれば未完了タスクの情報を削除
                     delegate?.deleteRemindTableViewTasks(at: indexPath.row)
                 }
             default:
+                // セクションインデックスが1の場合は通知済みタスクの情報を削除
                 delegate?.deleteRemindTableViewFinishedTasks(at: indexPath.row)
             }
 
@@ -145,6 +161,5 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
                 remindTableView.deleteRows(at: [indexPath], with: .automatic)
             }
         }
-
     }
 }

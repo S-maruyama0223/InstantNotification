@@ -11,8 +11,8 @@ import NotificationCenter
 
 protocol TaskModelDelegate: AnyObject {
     func registerTask(record: TaskCellRecord)
-    func failureTimeValidation()
-    func successTimeValidation()
+    func failureValidation()
+    func successValidation()
 }
 
 class TaskModel {
@@ -43,35 +43,59 @@ class TaskModel {
         NotificationCenter.default.removeObserver(self)
     }
 
-    func validateTextField(hour: String, minute: String) {
+
+    /// バリデーションメソッド
+    /// - Parameters:
+    ///   - task: 入力されたタスク
+    ///   - hour: 入力されたhour
+    ///   - minute:入力されたminute
+    func validateTextField(task: String, hour: String, minute: String) {
+
+        // タスクが空でないかの判定
+        if task.isEmpty {
+            delegate?.failureValidation()
+            return
+        }
 
         guard let hourNum = Int(hour), let minuteNum = Int(minute) else {
             // 数値を入力してください。
-            delegate?.failureTimeValidation()
+            delegate?.failureValidation()
             return
         }
 
-        if hourNum > 23 ||
-            minuteNum > 59 {
-            // 不正な時間です。
-            delegate?.failureTimeValidation()
+        // 時間範囲のバリデーション
+        if hourNum   > 23 ||
+           minuteNum > 59 {
+            delegate?.failureValidation()
             return
         }
 
-        if hour.count < 2 || minute.count < 2 {
-            delegate?.failureTimeValidation()
+        // 文字数のバリデーション
+        if hour.count   < 2 ||
+           minute.count < 2 {
+            delegate?.failureValidation()
             return
         }
 
-        delegate?.successTimeValidation()
+        delegate?.successValidation()
     }
 
+
+    /// 受け取った入力内容をタスク登録するメソッド
+    /// - Parameters:
+    ///   - dateIndex: 0か1の値
+    ///   - hour: 入力されたhour文字列
+    ///   - minute: 入力されたminute文字列
+    ///   - task: 入力されたtask文字列
     func registerTask(dateIndex: Int, hour: String, minute: String, task: String) {
         let record = createRecord(dateIndex: dateIndex, hour: hour, minute: minute, task: task)
         createNotification(record: record)
         delegate?.registerTask(record: record)
     }
 
+
+
+    /// 現状登録されているタスクを端末に保存するメソッド
     func saveTasks() {
         do {
             let encodedTasks = try JSONEncoder().encode(tasks)
@@ -84,18 +108,24 @@ class TaskModel {
         }
     }
 
+
+    /// 完了済みのタスクを振り分けるメソッド
     private func checkFinishedTasks() {
-        let df = DateFormatter()
-        df.dateFormat = "MMddHHmm"
-        let now = Int(df.string(from: Date()))!
-        for (i, _) in tasks.enumerated().reversed() {
-            let task = tasks[i]
-            if Int("\(task.month)\(task.day)\(task.hour)\(task.minute)")! <= now {
-                finishedTasks.append(tasks.remove(at: i))
+        for (index, task) in tasks.enumerated().reversed() {
+            if task.date <= Date() {
+                finishedTasks.append(tasks.remove(at: index))
             }
         }
     }
 
+
+    /// 入力されたテキストから一つの登録タスクデータを作成するメソッド
+    /// - Parameters:
+    ///   - dateIndex: 0か1の値
+    ///   - hour: 入力されたhour文字列
+    ///   - minute: 入力されたminute文字列
+    ///   - task: 入力されたtask文字列
+    /// - Returns:TaskCellRecord
     private func createRecord(dateIndex: Int, hour: String, minute: String, task: String) -> TaskCellRecord {
         /// 日付パラメータから日付を判断して指定のフォーマットで返す
         func createStringDate(format: MMDD) -> String {
@@ -111,10 +141,13 @@ class TaskModel {
         func createDate(dateIndex: Int, hour: String, minute: String) -> Date {
             let date: Date
             if dateIndex == 0 {
+                // dateIndexが0なら今日
                 date = Date()
             } else {
+                // dateIndexが0でなければ明日
                 date = Date(timeIntervalSinceNow: 60 * 60 * 24)
             }
+            // 与えられた時間文字列からDateを作成
             var dc = DateComponents()
             let df = DateFormatter()
             df.dateFormat = "YYYY"
@@ -139,14 +172,25 @@ class TaskModel {
         return createdTask
     }
 
+
+    /// 通知を登録するidを作成するメソッド
+    /// - Parameter task: タスク内容
+    /// - Returns: 作成したid
     private func createNotificationIdentifier(task: TaskCellRecord) -> String {
         return task.month + task.day + task.hour + task.minute + task.task
     }
 
+
+    /// 端末に登録してある通知情報を削除するメソッド
+    /// - Parameters:
+    ///   - isFinished: 完了済みタスクかどうか
+    ///   - tasksIndex: タスク配列のインデックス
     func deleteNotification(isFinished: Bool, tasksIndex: Int) {
         if isFinished {
+            // 完了済みタスクなら配列から削除するだけ
             finishedTasks.remove(at: tasksIndex)
         } else {
+            // 未完了タスクなら通知と配列内レコードを削除
             UNUserNotificationCenter.current().removePendingNotificationRequests(
                 withIdentifiers: [createNotificationIdentifier(task: tasks[tasksIndex])]
             )
@@ -154,6 +198,9 @@ class TaskModel {
         }
     }
 
+
+    /// 通知情報を登録するメソッド
+    /// - Parameter record: TaksCellRecord
     private func createNotification(record: TaskCellRecord) {
         var dc = DateComponents()
         dc.month = Int(record.month)
@@ -185,4 +232,9 @@ enum MMDD: String {
     func toString() -> String {
         return self.rawValue
     }
+}
+
+enum TimeValidateError: Error {
+    case success
+    case failure(message: String)
 }

@@ -10,9 +10,9 @@
 * やることリスト
 * オートレイアウト
 * カスタムアラート音
-* バリデーション
+* バリデーション ok
 * キーボードツールバー
-* テキストフィールド入力値制御
+* テキストフィールド入力値制御 ok
 * タスク取り消し機能 ok
 * タスク保存 ok
 * 完了タスク自動削除/過去履歴作成  ok
@@ -21,6 +21,11 @@
 * タスク追加時に重複のチェック
 * 構造体のStringプロパティを消せないか検討
 * ソート
+* メッセージ表示
+*
+*
+*
+*
 *
 */
 
@@ -42,11 +47,13 @@ class ViewController: UIViewController {
         self.view = mainView
         taskModel?.delegate = self
         mainView.delegate = self
-        mainView.hourTextField.addTarget(self, action: #selector(timeFieldEditingChanged), for: .editingChanged)
-        mainView.minuteTextField.addTarget(self, action: #selector(timeFieldEditingChanged), for: .editingChanged)
     }
 
+
     private func registerModel() {
+        mainView.taskTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
+        mainView.hourTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
+        mainView.minuteTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         mainView.doneButton.addTarget(self, action: #selector(tapDoneButton), for: .touchUpInside)
     }
 
@@ -59,28 +66,31 @@ class ViewController: UIViewController {
         )
     }
 
-    @objc private func timeFieldEditingChanged(sender: UITextField) {
-        //TODO: 両方空の時にデフォルト時間を挿入
-        taskModel?.validateTextField(hour: mainView.hourTextField.text ?? "",
-                                     minute: mainView.minuteTextField.text ?? ""
-        )
+    @objc private func textFieldEditingChanged(sender: UITextField) {
         if sender.text?.count ?? 0 > 2 { // 現状の言語仕様ではフォースアンラップでも安全だがcountは0をデフォルトとする
             sender.text = sender.text?.prefix(2).description
+            return
         }
+        // TODO: 両方空の時にデフォルト時間を挿入
+        taskModel?.validateTextField(task: mainView.taskTextField.text ?? "",
+                                     hour: mainView.hourTextField.text ?? "",
+                                     minute: mainView.minuteTextField.text ?? ""
+        )
     }
 }
 
 extension ViewController: TaskModelDelegate {
+
     /// タスクを登録してビューに反映する
     /// - Parameter record: TaskCellRecord タスク情報
     func registerTask(record: TaskCellRecord) {
         mainView.remindTableView.reloadData()
     }
 
-    func failureTimeValidation() {
+    func failureValidation() {
         mainView.doneButton.isEnabled = false
     }
-    func successTimeValidation() {
+    func successValidation() {
         mainView.doneButton.isEnabled = true
     }
 }
