@@ -68,7 +68,7 @@ class MainView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        if tasks.isEmpty && finishedTasks.isEmpty == false {
+        if tasks.isEmpty && finishedTasks.isEmpty {
             // 完了済みタスク、未完了タスク共に無ければセクションを作らない
             return 0
         } else if tasks.count >= 1 && finishedTasks.count >= 1 {

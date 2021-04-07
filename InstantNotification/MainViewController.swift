@@ -51,7 +51,6 @@ class ViewController: UIViewController {
 
 
     private func registerModel() {
-        mainView.taskTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         mainView.hourTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         mainView.minuteTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         mainView.doneButton.addTarget(self, action: #selector(tapDoneButton), for: .touchUpInside)
@@ -80,7 +79,6 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: TaskModelDelegate {
-
     /// タスクを登録してビューに反映する
     /// - Parameter record: TaskCellRecord タスク情報
     func registerTask(record: TaskCellRecord) {
