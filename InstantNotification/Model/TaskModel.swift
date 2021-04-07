@@ -43,7 +43,6 @@ class TaskModel {
         NotificationCenter.default.removeObserver(self)
     }
 
-
     /// バリデーションメソッド
     /// - Parameters:
     ///   - task: 入力されたタスク
@@ -80,7 +79,6 @@ class TaskModel {
         delegate?.successValidation()
     }
 
-
     /// 受け取った入力内容をタスク登録するメソッド
     /// - Parameters:
     ///   - dateIndex: 0か1の値
@@ -92,7 +90,6 @@ class TaskModel {
         createNotification(record: record)
         delegate?.registerTask(record: record)
     }
-
 
 
     /// 現状登録されているタスクを端末に保存するメソッド
@@ -108,7 +105,6 @@ class TaskModel {
         }
     }
 
-
     /// 完了済みのタスクを振り分けるメソッド
     private func checkFinishedTasks() {
         for (index, task) in tasks.enumerated().reversed() {
@@ -117,7 +113,6 @@ class TaskModel {
             }
         }
     }
-
 
     /// 入力されたテキストから一つの登録タスクデータを作成するメソッド
     /// - Parameters:
@@ -172,14 +167,12 @@ class TaskModel {
         return createdTask
     }
 
-
     /// 通知を登録するidを作成するメソッド
     /// - Parameter task: タスク内容
     /// - Returns: 作成したid
     private func createNotificationIdentifier(task: TaskCellRecord) -> String {
         return task.month + task.day + task.hour + task.minute + task.task
     }
-
 
     /// 端末に登録してある通知情報を削除するメソッド
     /// - Parameters:
@@ -197,7 +190,6 @@ class TaskModel {
             tasks.remove(at: tasksIndex)
         }
     }
-
 
     /// 通知情報を登録するメソッド
     /// - Parameter record: TaksCellRecord
@@ -232,9 +224,4 @@ enum MMDD: String {
     func toString() -> String {
         return self.rawValue
     }
-}
-
-enum TimeValidateError: Error {
-    case success
-    case failure(message: String)
 }

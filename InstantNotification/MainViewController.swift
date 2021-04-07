@@ -22,7 +22,7 @@
 * 構造体のStringプロパティを消せないか検討
 * ソート
 * メッセージ表示
-*
+* taskのバリデーション
 *
 *
 *
@@ -48,7 +48,6 @@ class ViewController: UIViewController {
         taskModel?.delegate = self
         mainView.delegate = self
     }
-
 
     private func registerModel() {
         mainView.hourTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
